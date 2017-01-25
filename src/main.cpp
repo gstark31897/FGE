@@ -3,6 +3,7 @@
 
 #include "rendermanager.h"
 #include "animation.h"
+#include "combo.h"
 
 #define SCREEN_WIDTH  640
 #define SCREEN_HEIGHT 480
@@ -21,6 +22,8 @@ void render(SDL_Window *window)
         std::cerr << "SDL could not initialize renderer: " << SDL_GetError() << std::endl;
         return;
     }
+
+    ComboRecognizer *combo = new ComboRecognizer(10.0f);
 
     RenderManager *renderManager = new RenderManager(renderer);
     Animation *anim = new Animation(10.0);
