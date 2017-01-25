@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "rendermanager.h"
-#include "sprite.h"
+#include "animation.h"
 
 #define SCREEN_WIDTH  640
 #define SCREEN_HEIGHT 480
@@ -11,9 +11,11 @@
 void render(SDL_Window *window)
 {
     bool quit = false;
+    size_t last = 0;
+    size_t current = SDL_GetPerformanceCounter();
     SDL_Event e;
-    SDL_Surface *screenSurface = NULL;
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    //SDL_Surface *screenSurface = NULL;
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL)
     {
         std::cerr << "SDL could not initialize renderer: " << SDL_GetError() << std::endl;
@@ -21,20 +23,22 @@ void render(SDL_Window *window)
     }
 
     RenderManager *renderManager = new RenderManager(renderer);
-    Sprite *sprite = new Sprite(renderManager, "spikey.jpg", 0.0f, 0.0f, 100.0f, 100.0f);
-    renderManager->registerRenderable(sprite);
+    Animation *anim = new Animation(10.0);
+    renderManager->registerRenderable(anim);
+    anim->addFrame("spikey.jpg", 0,  0, 100, 100, 0, 0, 100, 100);
+    anim->addFrame("spikey.jpg", 10, 0, 110, 100, 0, 0, 110, 100);
+    anim->addFrame("spikey.jpg", 20, 0, 120, 100, 0, 0, 120, 100);
+    anim->addFrame("spikey.jpg", 10, 0, 110, 100, 0, 0, 110, 100);
     while (!quit)
     {
-        screenSurface = SDL_GetWindowSurface(window);
+        last = current;
+        current = SDL_GetPerformanceCounter();
+
+        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(renderer);
-        SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0x00, 0x00));
 
-        renderManager->update();
+        renderManager->update((current-last)*1000 / SDL_GetPerformanceFrequency());
         renderManager->render();
-
-        SDL_Rect fillRect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
-        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0x00, 0xFF);
-        SDL_RenderFillRect(renderer, &fillRect);
 
         SDL_UpdateWindowSurface(window);
 

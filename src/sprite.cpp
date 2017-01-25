@@ -3,31 +3,41 @@
 using namespace std;
 
 
-Sprite::Sprite(RenderManager *renderManager, string texture, float x, float y, float width, float height)
+Sprite::Sprite(string texture, int x, int y, int width, int height)
 {
-    m_renderManager = renderManager;
+    m_rect = new SDL_Rect();
+    *m_rect = {x, y, width, height};
     m_texture = texture;
-    m_x = x;
-    m_y = y;
-    m_width = width;
-    m_height = height;
+}
 
-    m_renderManager->loadTexture(m_texture);
+Sprite::Sprite(std::string texture, int x, int y, int width, int height, int clipX, int clipY, int clipWidth, int clipHeight)
+{
+    m_clip = new SDL_Rect();
+    *m_clip = {clipX, clipY, clipWidth, clipHeight};
+    m_rect = new SDL_Rect();
+    *m_rect = {x, y, width, height};
+    m_texture = texture;
 }
 
 Sprite::~Sprite()
 {
-
+    delete m_rect;
+    if (m_clip != NULL)
+        delete m_clip;
 }
 
 void Sprite::render(SDL_Renderer *renderer)
 {
-    SDL_Rect fillRect = {m_x, m_y, m_width, m_height};
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0x00, 0xFF);
-    SDL_RenderFillRect(renderer, &fillRect); 
+    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    SDL_RenderCopy(renderer, m_spriteSheet, m_clip, m_rect);
 }
 
 void Sprite::update()
 {
 
+}
+
+void Sprite::renderManagerRegistered(RenderManager *renderManager)
+{
+    m_spriteSheet = renderManager->loadTexture(m_texture);
 }

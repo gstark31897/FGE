@@ -7,17 +7,20 @@
 class Sprite: public Renderable
 {
 private:
-    RenderManager *m_renderManager;
-    std::string m_texture;
-    float       m_x, m_y;
-    float       m_width, m_height;
+    std::string    m_texture;
+    SDL_Rect      *m_rect = NULL;
+    SDL_Rect      *m_clip = NULL;
+    SDL_Texture   *m_spriteSheet = NULL;
 
 public:
-    Sprite(RenderManager *renderManager, std::string texture, float x, float y, float width, float height);
+    Sprite(std::string texture, int x, int y, int width, int height);
+    Sprite(std::string texture, int x, int y, int width, int height, int clipX, int clipY, int clipWidth, int clipHeight);
     ~Sprite();
 
     void update();
     void render(SDL_Renderer *renderer);
+
+    void renderManagerRegistered(RenderManager *renderManager);
 };
 
 #endif

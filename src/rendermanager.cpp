@@ -20,6 +20,7 @@ RenderManager::~RenderManager()
 void RenderManager::registerRenderable(Renderable *subject)
 {
     m_subjects.push_back(subject);
+    subject->renderManagerRegistered(this);
 }
 
 void RenderManager::unregisterRenderable(Renderable *subject)
@@ -34,25 +35,25 @@ void RenderManager::unregisterRenderable(Renderable *subject)
     }
 }
 
-bool RenderManager::loadTexture(string path)
+SDL_Texture* RenderManager::loadTexture(string path)
 {
     SDL_Texture* texture = NULL;
     SDL_Surface* surface = IMG_Load(path.c_str());
     if (surface == NULL)
     {
         std::cerr << "Unable to load texture: " << path << std::endl;
-        return false;
+        return NULL;
     }
     texture = SDL_CreateTextureFromSurface(m_renderer, surface);
     m_textures[path] = texture;
-    return true;
+    return texture;
 }
 
-void RenderManager::update()
+void RenderManager::update(float deltaTime)
 {
     for (std::vector<Renderable*>::iterator it = m_subjects.begin(); it != m_subjects.end(); ++it)
     {
-        (*it)->update();
+        (*it)->update(deltaTime);
     }
 }
 
@@ -62,4 +63,5 @@ void RenderManager::render()
     {
         (*it)->render(m_renderer);
     }
+    SDL_RenderPresent(m_renderer);
 }

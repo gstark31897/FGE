@@ -7,7 +7,8 @@
 
 #include <SDL2/SDL.h>
 
-#include "renderable.h"
+
+class Renderable;
 
 
 class RenderManager
@@ -24,10 +25,20 @@ public:
     void registerRenderable(Renderable *subject);
     void unregisterRenderable(Renderable *subject);
 
-    bool loadTexture(std::string path);
+    SDL_Texture* loadTexture(std::string path);
 
-    void update();
+    void update(float deltaTime);
     void render();
+};
+
+
+class Renderable
+{
+public:
+    virtual void render(SDL_Renderer *renderer) {};
+    virtual void update(float deltaTime) {};
+
+    virtual void renderManagerRegistered(RenderManager *renderManager) {};
 };
 
 #endif
