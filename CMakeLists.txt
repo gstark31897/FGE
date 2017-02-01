@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(FGE)
 
-set(SOURCE_FILES src/main.cpp src/rendermanager.cpp src/sprite.cpp src/animation.cpp)
+set(SOURCE_FILES src/main.cpp src/rendermanager.cpp src/sprite.cpp src/animation.cpp src/combo.cpp src/keyboard.cpp)
 set(CMAKE_CXX_FLAGS "-g")
 
 add_executable(FGE ${SOURCE_FILES})

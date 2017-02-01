@@ -5,21 +5,27 @@
 #include <SDL2/SDL.h>
 #include <vector>
 
+#include "keyboard.h"
 
-class ComboRecognizer
+
+class ComboRecognizer: public KeyListener
 {
 private:
-    std::vector<std::vector<SDL_KeyboardEvent>> m_combos;
-    std::vector<SDL_KeyboardEvent> m_events;
+    std::vector<std::vector<SDL_Keycode>> m_combos;
+    std::vector<SDL_Keycode> m_events;
     float m_timeout;
     float m_currentTime;
+    bool checkCombo(size_t idx);
 
 public:
     ComboRecognizer(float timeout);
-    ~ComboRecognizer();
+    ~ComboRecognizer() {};
 
-    void addCombo(std::vector<SDL_KeyboardEvent> combo);
-    void addEvent(SDL_KeyboardEvent event);
+    void keyDown(SDL_Keycode);
+    void keyUp(SDL_Keycode);
+
+    void addCombo(std::vector<SDL_Keycode> combo);
+    void addEvent(SDL_Keycode event);
     void update(float deltaTime);
 };
 

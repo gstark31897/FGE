@@ -4,6 +4,7 @@
 #include "rendermanager.h"
 #include "animation.h"
 #include "combo.h"
+#include "keyboard.h"
 
 #define SCREEN_WIDTH  640
 #define SCREEN_HEIGHT 480
@@ -14,8 +15,8 @@ void render(SDL_Window *window)
     bool quit = false;
     size_t last = 0;
     size_t current = SDL_GetPerformanceCounter();
+    float deltaTime = 0;
     SDL_Event e;
-    //SDL_Surface *screenSurface = NULL;
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL)
     {
@@ -23,25 +24,35 @@ void render(SDL_Window *window)
         return;
     }
 
-    ComboRecognizer *combo = new ComboRecognizer(10.0f);
+    std::vector<SDL_Keycode> abba;
+    abba.push_back(SDLK_a);
+    abba.push_back(SDLK_b);
+    abba.push_back(SDLK_b);
+    abba.push_back(SDLK_a);
+
+    ComboRecognizer *combo = new ComboRecognizer(250.0f);
+    combo->addCombo(abba);
+    KeyboardManager km;
+    km.registerKeyListener(combo);
 
     RenderManager *renderManager = new RenderManager(renderer);
     Animation *anim = new Animation(10.0);
     renderManager->registerRenderable(anim);
     anim->addFrame("spikey.jpg", 0,  0, 100, 100, 0, 0, 100, 100);
-    anim->addFrame("spikey.jpg", 10, 0, 110, 100, 0, 0, 110, 100);
-    anim->addFrame("spikey.jpg", 20, 0, 120, 100, 0, 0, 120, 100);
-    anim->addFrame("spikey.jpg", 10, 0, 110, 100, 0, 0, 110, 100);
+
     while (!quit)
     {
         last = current;
         current = SDL_GetPerformanceCounter();
+        deltaTime = (current-last)*1000 / SDL_GetPerformanceFrequency();
 
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
         SDL_RenderClear(renderer);
 
-        renderManager->update((current-last)*1000 / SDL_GetPerformanceFrequency());
+        renderManager->update(deltaTime);
         renderManager->render();
+
+        combo->update(deltaTime);
 
         SDL_UpdateWindowSurface(window);
 
@@ -49,6 +60,14 @@ void render(SDL_Window *window)
         {
             if (e.type == SDL_QUIT)
                 quit = true;
+            if (e.type == SDL_KEYDOWN)
+            {
+                km.keyDown(e.key.keysym.sym);
+            }
+            if (e.type == SDL_KEYUP)
+            {
+                km.keyUp(e.key.keysym.sym);
+            }
         }
     }
 }
