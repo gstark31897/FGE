@@ -47,16 +47,18 @@ void ComboRecognizer::update(float deltaTime)
 
 bool ComboRecognizer::checkCombo(size_t idx)
 {
-    if (m_events.size() > m_combos[idx].size())
-        return false;
-
-    for (size_t i = 0; i < m_combos[idx].size(); ++i)
+    if (m_events.size() < m_combos[idx].size())
     {
-        if (m_combos[idx][i] != m_events[i])
-            return false;
-        if (i == m_combos[idx].size() - 1)
-            return true;
+        return false;
     }
-    return false;
+
+    for (size_t i = 1; i < m_combos[idx].size() + 1; ++i)
+    {
+        if (m_combos[idx][m_combos[idx].size()-i] != m_events[m_events.size()-i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "keyboard.h"
+#include "event.h"
 
 
 class ComboRecognizer: public KeyListener

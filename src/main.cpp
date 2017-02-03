@@ -5,9 +5,16 @@
 #include "animation.h"
 #include "combo.h"
 #include "keyboard.h"
+#include "event.h"
 
 #define SCREEN_WIDTH  640
 #define SCREEN_HEIGHT 480
+
+
+void foo()
+{
+    std::cout << "hello world" << std::endl;
+}
 
 
 void render(SDL_Window *window)
@@ -29,11 +36,22 @@ void render(SDL_Window *window)
     abba.push_back(SDLK_b);
     abba.push_back(SDLK_b);
     abba.push_back(SDLK_a);
+    std::vector<SDL_Keycode> asdf;
+    asdf.push_back(SDLK_a);
+    asdf.push_back(SDLK_s);
+    asdf.push_back(SDLK_d);
+    asdf.push_back(SDLK_f);
 
     ComboRecognizer *combo = new ComboRecognizer(250.0f);
     combo->addCombo(abba);
+    combo->addCombo(asdf);
     KeyboardManager km;
     km.registerKeyListener(combo);
+
+    EventManager event;
+    size_t a = event.createEvent();
+    event.registerListener(a, foo);
+    event.emitEvent(a);
 
     RenderManager *renderManager = new RenderManager(renderer);
     Animation *anim = new Animation(10.0);
